@@ -11,6 +11,7 @@ let rollbar = new Rollbar({
 const students = []
 const app = express()
 app.use(express.json())
+app.use('/style', express.static('./public.styles.css'))
 
 
 app.get('/', (req,res)=> { 
@@ -18,14 +19,24 @@ app.get('/', (req,res)=> {
     rollbar.info('HTML file served successfully')
 })
 
-app.post('/api/student', (req,res)=> { 
+app.post('/api/student', (req, res)=>{
     let {name} = req.body
     name = name.trim()
 
-    students.push(name)
+    const index = students.findIndex(studentName=> studentName === name)
 
-    rollbar.log("Student added succesfully", {author:"Carlos", type:'manual entry'})
-    res.status(200).send(students)
+    if(index === -1 && name !== ''){
+        students.push(name)
+        rollbar.log('Studen added Successfully', {author:'Carlos'})
+        res.status(200).send(students)
+    } else if (name === ''){
+        rollbar.error('No name given')
+        res.status(400).send('must provide a name.')
+    } else {
+        rollbar.error('student already exists')
+        res.status(400).send('that student already exists')
+    }
+
 })
 const port = process.env.PORT || 4545
 
