@@ -7,4 +7,7 @@ app.get('/', (req,res)=> {
     res.sendFile(path.join(__dirname, '/public/index.html'))
 })
 
-app.listen(4545, () => console.log("Take us to port 4545"))
+const port = process.env.PORT || 4545
+
+
+app.listen(port, () => console.log("Take us to port 4545"))
